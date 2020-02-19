@@ -1,7 +1,7 @@
 import HttpHeaders from './HttpHeaders';
 
 const IMAGE_CONTENT_TYPE = /^image\//i;
-const JSON_CONTENT_TYPE = /\/\+?json/i;
+const JSON_CONTENT_TYPE = /[/+]json/i;
 const TEXT_CONTENT_TYPE = /^text\//i;
 
 class HttpResponse {
@@ -21,12 +21,32 @@ class HttpResponse {
     return this.status >= 400;
   }
 
+  isOk() {
+    return this.status === 200;
+  }
+
   isClientError() {
     return this.status >= 400 && this.status < 500;
   }
 
   isServerError() {
     return this.status >= 500;
+  }
+
+  isUnauthorized() {
+    return this.status === 401;
+  }
+
+  isForbidden() {
+    return this.status === 403;
+  }
+
+  isNotFound() {
+    return this.status === 404;
+  }
+
+  isValidationError() {
+    return this.status === 422;
   }
 
   contentType() {

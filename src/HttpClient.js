@@ -18,11 +18,13 @@ class HttpClient {
       responseType,
       onError,
       onSuccess,
+      errorMessagePath,
+      validationErrorsPath,
       ...mergedOptions
     } = this.mergeOptions(options);
 
     try {
-      const response = await ky(url, {
+      const response = await ky(url.replace(/^\//, ''), {
         ...mergedOptions,
         method,
         prefixUrl: this.prefixUrl,
@@ -39,11 +41,15 @@ class HttpClient {
         ? await HttpResponse.fromNativeResponse(error.response)
         : null;
 
-      const httpError = new HttpError(error.message, response);
+      const httpError = new HttpError(error.message, response, {
+        errorMessagePath,
+        validationErrorsPath,
+      });
 
       if (isFunction(onError)) {
         return onError(httpError);
       }
+
       throw httpError;
     }
   }

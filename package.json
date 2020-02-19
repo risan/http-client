@@ -47,7 +47,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -c -w",
+    "watch": "rollup -c -w --environment DEVELOPMENT",
     "lint": "eslint ./",
     "lint-fix": "eslint ./ --fix",
     "test": "jest",
@@ -55,7 +55,6 @@
   },
   "browserslist": [
     "> 0.5%",
-    "not ie 11",
-    "maintained node versions"
+    "not ie 11"
   ]
 }

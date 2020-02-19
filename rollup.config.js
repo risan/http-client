@@ -4,8 +4,10 @@ import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 
+const { DEVELOPMENT } = process.env;
+
 module.exports = {
-  input: 'src/index.js',
+  input: 'src/HttpClient.js',
   output: [
     {
       file: 'dist/HttpClient.esm.js',
@@ -16,13 +18,15 @@ module.exports = {
       file: 'dist/HttpClient.umd.js',
       format: 'umd',
     },
-    {
-      name: 'HttpClient',
-      file: 'dist/HttpClient.umd.min.js',
-      format: 'umd',
-      plugins: [terser()],
-    },
-  ],
+    DEVELOPMENT
+      ? null
+      : {
+          name: 'HttpClient',
+          file: 'dist/HttpClient.umd.min.js',
+          format: 'umd',
+          plugins: [terser()],
+        },
+  ].filter(Boolean),
   plugins: [
     json(),
     resolve(),

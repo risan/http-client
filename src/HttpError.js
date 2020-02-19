@@ -21,8 +21,8 @@ class HttpError extends Error {
     }
 
     if (
-      response.isValidationError() &&
       this.hasJsonBody() &&
+      response.isValidationError() &&
       validationErrorsPath
     ) {
       const errors = dataGet(response.body, validationErrorsPath);

@@ -26,7 +26,7 @@ You can also use the CDN directly:
 ```js
 import HttpClient from '@risan/http-client';
 
-const client = new HttpClient('http://example.com');
+const client = new HttpClient('https://httpbin.org');
 
 client.get('/json')
   .then(response => console.log(response.body));
@@ -55,6 +55,28 @@ new HttpClient(prefixUrl, defaultOptions = {})
 
 - `prefixUrl`: A prefix to prepend to the URL when making the request.
 - `defaultOptions`: A default options to use when making the request, check [Options](#options) for more detail.
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org', {
+  headers: {
+    accept: ['application/json', 'text/plain'],
+  },
+  credentials: 'same-origin',
+  timeout: 10000,
+  onError(error) {
+    console.log(error.message);
+
+    throw new Error('custom error');
+  },
+  onSuccess(response) {
+    console.log(response.body);
+
+    return 'custom result';
+  },
+});
+```
 
 #### Options
 
@@ -88,12 +110,30 @@ Send HTTP request.
 HttpClient.request(method, url, options = {});
 ```
 
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.request('GET', '/json')
+  .then(response => console.log(response.body));
+```
+
 ### `HttpClient.get()`
 
 Send HTTP GET request.
 
 ```js
 HttpClient.get(url, options = {});
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/json')
+  .then(response => console.log(response.body));
 ```
 
 ### `HttpClient.post()`
@@ -104,12 +144,30 @@ Send HTTP POST request.
 HttpClient.post(url, body = null, options = {});
 ```
 
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.post('/post', { foo: 'bar' })
+  .then(response => console.log(response.body));
+```
+
 ### `HttpClient.put()`
 
 Send HTTP PUT request.
 
 ```js
 HttpClient.put(url, body = null, options = {});
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.put('/put', { foo: 'bar' })
+  .then(response => console.log(response.body));
 ```
 
 ### `HttpClient.patch()`
@@ -120,12 +178,30 @@ Send HTTP PATCH request.
 HttpClient.patch(url, body = null, options = {});
 ```
 
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.patch('/patch', { foo: 'bar' })
+  .then(response => console.log(response.body));
+```
+
 ### `HttpClient.delete()`
 
 Send HTTP DELETE request.
 
 ```js
 HttpClient.delete(url, options = {});
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.delete('/delete')
+  .then(response => console.log(response.body));
 ```
 
 ## Guide

@@ -23,7 +23,7 @@
     "node": ">=10"
   },
   "dependencies": {
-    "@risan/helpers": "^1.0.1",
+    "@risan/helpers": "^1.0.2",
     "core-js": "3",
     "ky": "^0.17.0",
     "regenerator-runtime": "^0.13.3"

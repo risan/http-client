@@ -902,10 +902,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@risan/helpers@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@risan/helpers/-/helpers-1.0.1.tgz#3122e09a27a3e731bfa5b9dd50e6058dfc6a7416"
-  integrity sha512-icC0axV2ZFBdoPlF/FXH6q2X0nn1BNCGa1T/o+dUenNxN0Jfswmk0CkGTPpVTGjr2FqLOBWgNfUoEl6zNefwvw==
+"@risan/helpers@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@risan/helpers/-/helpers-1.0.2.tgz#8870137f29bced69863726f8fcbafbddfde466e0"
+  integrity sha512-fvi5Rnl9hexN+Mskfwtypu0nH8W3LTImiQ9YRqPW+YjPgceXqZnoOOE8MHP13fyDG0l47IOQsAHPIy8El1xMEg==
   dependencies:
     core-js "3"
     date-fns "^2.9.0"

@@ -15,7 +15,7 @@ class HttpError extends Error {
     if (this.hasJsonBody() && errorMessagePath) {
       const errorMessage = dataGet(response.body, errorMessagePath);
 
-      if (isString(message) && !isEmpty(message)) {
+      if (isString(errorMessage) && !isEmpty(errorMessage)) {
         this.message = errorMessage;
       }
     }

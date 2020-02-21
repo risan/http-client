@@ -37,6 +37,8 @@ client.post('/post', { foo: 'bar' })
 
 ## API
 
+**`HttpClient`**
+
 - [`HttpClient()`](#httpclient)
 - [`HttpClient.request()`](#httpclientrequest)
 - [`HttpClient.get()`](#httpclientget)
@@ -51,6 +53,8 @@ client.post('/post', { foo: 'bar' })
 - [`HttpClient.setDefaultBearerToken()`](#httpclientsetdefaultbearertoken)
 - [`HttpClient.removeDefaultBearerToken()`](#httpclientremovedefaultbearertoken)
 
+**`HttpResponse`**
+
 - [`HttpResponse.body`](httpresponsebody)
 - [`HttpResponse.status`](httpresponsestatus)
 - [`HttpResponse.headers`](httpresponseheaders)
@@ -64,11 +68,11 @@ client.post('/post', { foo: 'bar' })
 Create a new `HttpClient` instance.
 
 ```js
-new HttpClient(prefixUrl, defaultOptions = {})
+new HttpClient(prefixUrl: String, defaultOptions = {})
 ```
 
-- `prefixUrl`: A prefix to prepend to the URL when making the request.
-- `defaultOptions`: A default options to use when making the request, check [Options](#options) for more detail.
+- `prefixUrl` *(`String`)*: A prefix to prepend to the URL when making the request.
+- `defaultOptions` *(`Object`)*: A default options to use when making the request. This `defaultOptions` will be merged with the `options` parameter when making the request. Check [Options](#options) for all possible configurations.
 
 ```js
 import HttpClient from '@/risan/http-client';
@@ -96,32 +100,33 @@ const client = new HttpClient('https://httpbin.org', {
 
 The request's options are similar to [`fetch()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch) with slight differences:
 
-- `headers`: Unlike `fetch()`, it only accepts an object literal.
-- `credentials`: Default to `same-origin`.
+- `headers` *(`Object`)*: Unlike `fetch()`, it only accepts an object literal.
+- `credentials` *(`String`)*: Default to `same-origin`.
 
 It also accepts a similar options as [`ky`](https://github.com/sindresorhus/ky#options):
 
 - [`searchParams`](https://github.com/sindresorhus/ky#searchparams): Search parameters to include in the request URL.
-- [`retry`](https://github.com/sindresorhus/ky#retry): Maximum retry count.
-- [`timeout`](https://github.com/sindresorhus/ky#timeout): Timeout in milliseconds for getting a response.
-- [`hooks`](https://github.com/sindresorhus/ky#hooks): Hooks allow modifications during the request lifecycle.
-- [`throwHttpErrors`](https://github.com/sindresorhus/ky#throwhttperrors): Throws an error for a non-2xx response, default to `true`.
-- [`onDownloadProgress`](https://github.com/sindresorhus/ky#ondownloadprogress): Download progress event handler.
+- [`retry`](https://github.com/sindresorhus/ky#retry) *(`Object|Number`)*: Maximum retry count.
+- [`timeout`](https://github.com/sindresorhus/ky#timeout) *(`Number|false`)*: Timeout in milliseconds for getting a response, default to `10000`.
+- [`hooks`](https://github.com/sindresorhus/ky#hooks) *(`Object`)*: Hooks allow modifications during the request lifecycle.
+- [`onDownloadProgress`](https://github.com/sindresorhus/ky#ondownloadprogress) *(`Function`)*: Download progress event handler.
 
-As addition, it also accept the following options:
+However this library will always set the [`throwHttpErrors`](https://github.com/sindresorhus/ky#throwhttperrors) option to `true`.
 
-- `onError`: A callback function to call when an error response is received.
-- `onSuccess`: A callback function to call when an successful response is received.
-- `responseType`: Response's body type (`arrayBuffer`, `blob`, `formData`, `json`, or `text`).
-- `errorMessagePath`: A path to a custom error message.
-- `validationErrorsPath`: A path to a custom validation errors detail.
+This library also accepts the following options:
+
+- `onError` *(`Function`)*: A callback function to call when an error response is received (status code >= 400).
+- `onSuccess` *(`Function`)*: A callback function to call when an successful response is received (status code between 200-299).
+- `responseType` *(`String`)*: Response's body type, it's the [`Body`](https://developer.mozilla.org/en-US/docs/Web/API/Body)'s method name to call to read and parse the response's body (`arrayBuffer`, `blob`, `formData`, `json`, or `text`). If you don't set the `responseType`, the body will be parsed based on it's content type header.
+- `errorMessagePath` *(`String`)*: A path to a custom error message in JSON response.
+- `validationErrorsPath` *(`String`)*: A path to a custom validation errors detail in JSON response.
 
 #### `HttpClient.request()`
 
-Send HTTP request to `url` with the given HTTP `method`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
+Send HTTP request to `url` with the given HTTP `method`. The given [`options`](#options) will be merged with the previously set `defaultOptions`. On successful operation, it will return a `Promise` that will resolve to the [`HttpResponse`](#httpresponse) instance. On error it will throw an [`HttpError`](#httperror).
 
 ```js
-HttpClient.request(method, url, options = {});
+HttpClient.request(method: String, url: String, options = {}): Promise
 ```
 
 ```js
@@ -138,10 +143,10 @@ client.request('GET', '/json', {
 
 #### `HttpClient.get()`
 
-Send HTTP GET request to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
+A shortcut method to send HTTP GET request.
 
 ```js
-HttpClient.get(url, options = {});
+HttpClient.get(url: String, options = {}): Promise
 ```
 
 ```js
@@ -158,10 +163,10 @@ client.get('/json', {
 
 #### `HttpClient.post()`
 
-Send HTTP POST request with `body` to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
+A shortcut method to send HTTP POST request.
 
 ```js
-HttpClient.post(url, body = null, options = {});
+HttpClient.post(url: String, body = null, options = {}): Promise
 ```
 
 ```js
@@ -178,10 +183,10 @@ client.post('/post', { foo: 'bar' }, {
 
 #### `HttpClient.put()`
 
-Send HTTP PUT request with `body` to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
+A shortcut method to send HTTP PUT request.
 
 ```js
-HttpClient.put(url, body = null, options = {});
+HttpClient.put(url: String, body = null, options = {}): Promise
 ```
 
 ```js
@@ -198,10 +203,10 @@ client.put('/put', { foo: 'bar' }, {
 
 #### `HttpClient.patch()`
 
-Send HTTP PATCH request with `body` to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
+A shortcut method to send HTTP PATCH request.
 
 ```js
-HttpClient.patch(url, body = null, options = {});
+HttpClient.patch(url: String, body = null, options = {}): Promise
 ```
 
 ```js
@@ -218,10 +223,10 @@ client.patch('/patch', { foo: 'bar' }, {
 
 #### `HttpClient.delete()`
 
-Send HTTP DELETE request to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
+A shortcut method to send HTTP DELETE request.
 
 ```js
-HttpClient.delete(url, options = {});
+HttpClient.delete(url: String, options = {}): Promise
 ```
 
 ```js
@@ -241,7 +246,7 @@ client.delete('/delete', {
 Set a default option at `key` with `value`. This method returns the `HttpClient` instance itself.
 
 ```js
-HttpClient.setDefaultOption(key, value);
+HttpClient.setDefaultOption(key: String, value: Any): HttpClient
 ```
 
 ```js
@@ -271,7 +276,7 @@ console.log(client.defaultOptions);
 Remove a default option at `key`. This method returns the `HttpClient` instance itself.
 
 ```js
-HttpClient.removeDefaultOption(key);
+HttpClient.removeDefaultOption(key: String): HttpClient
 ```
 
 ```js
@@ -300,7 +305,7 @@ console.log(client.defaultOptions);
 Set a default header at `key` with `value`. This method returns the `HttpClient` instance itself.
 
 ```js
-HttpClient.setDefaultHeader(key, value);
+HttpClient.setDefaultHeader(key: String, value: String | Array): HttpClient
 ```
 
 ```js
@@ -329,7 +334,7 @@ console.log(client.defaultOptions);
 Remove a default header at `key`. This method returns the `HttpClient` instance itself.
 
 ```js
-HttpClient.removeDefaultHeader(key);
+HttpClient.removeDefaultHeader(key: String): HttpClient
 ```
 
 ```js
@@ -357,7 +362,7 @@ console.log(client.defaultOptions);
 Set a default bearer token in authorization header. This method returns the `HttpClient` instance itself.
 
 ```js
-HttpClient.setDefaultBearerToken(token);
+HttpClient.setDefaultBearerToken(token: String): HttpClient
 ```
 
 ```js
@@ -385,7 +390,7 @@ console.log(client.defaultOptions);
 Remove any default authorization header. This method returns the `HttpClient` instance itself.
 
 ```js
-HttpClient.removeDefaultBearerToken();
+HttpClient.removeDefaultBearerToken(): HttpClient
 ```
 
 ```js
@@ -427,7 +432,7 @@ client.get('/json')
 
 #### `HttpResponse.status`
 
-Get the response's status code.
+Get the response's status code *(`Number`)*.
 
 ```js
 import HttpClient from '@/risan/http-client';
@@ -440,7 +445,7 @@ client.get('/status/204')
 
 #### `HttpResponse.headers`
 
-Get the response's headers, it's an instance of [`HttpHeaders`](#httpheaders).
+Get the response's headers *([`HttpHeaders`](#httpheaders))*.
 
 ```js
 import HttpClient from '@/risan/http-client';
@@ -459,7 +464,7 @@ client.get('/json').then(response => {
 Check if the received `HttpResponse` instance is successful (status code between 200—299).
 
 ```js
-HttpResponse.isSuccess();
+HttpResponse.isSuccess(): Boolean
 ```
 
 ```js
@@ -481,7 +486,7 @@ client.get('/status/400').then(
 Check if the received `HttpResponse` instance is error (status code >= 400).
 
 ```js
-HttpResponse.isError();
+HttpResponse.isError(): Boolean
 ```
 
 ```js

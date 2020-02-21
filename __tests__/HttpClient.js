@@ -325,6 +325,7 @@ test('it can send http request', async () => {
     mode: 'cors',
     method: 'GET',
     prefixUrl: 'http://example.com',
+    throwHttpErrors: true,
     headers: {
       accept: 'application/json',
     },

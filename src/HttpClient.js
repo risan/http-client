@@ -61,6 +61,7 @@ class HttpClient {
         ...requestOptions,
         method,
         prefixUrl: this.prefixUrl,
+        throwHttpErrors: true,
       });
 
       const httpResponse = await HttpResponse.fromNativeResponse(

@@ -1,13 +1,21 @@
 {
   "name": "@risan/http-client",
-  "version": "1.0.0-alpha.1",
-  "description": "HTTP client for node and browser based on axios.",
+  "version": "1.0.0",
+  "description": "HTTP client for browser, a wrapper for ky.",
   "license": "MIT",
   "author": {
     "name": "Risan Bagja Pradana",
     "email": "risanbagja@gmail.com",
     "url": "https://risanb.com"
   },
+  "keywords": [
+    "ajax",
+    "fetch",
+    "http",
+    "ky",
+    "request",
+    "xhr"
+  ],
   "homepage": "https://github.com/risan/http-client#readme",
   "repository": {
     "type": "git",

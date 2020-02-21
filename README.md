@@ -1,5 +1,7 @@
 # HTTP Client
 
+HTTP client for browser, a wrapper for [`ky`](https://github.com/sindresorhus/ky).
+
 [![CircleCI](https://circleci.com/gh/risan/http-client.svg?style=shield)](https://circleci.com/gh/risan/http-client)
 [![Codecov](https://codecov.io/gh/risan/http-client/branch/master/graph/badge.svg)](https://codecov.io/gh/risan/http-client)
 [![NPM](https://img.shields.io/npm/v/@risan/http-client)](https://www.npmjs.com/package/@risan/http-client)

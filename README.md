@@ -29,10 +29,10 @@ import HttpClient from '@risan/http-client';
 const client = new HttpClient('https://httpbin.org');
 
 client.get('/json')
-  .then(response => console.log(response.body));
+  .then(res => console.log(res.body));
 
 client.post('/post', { foo: 'bar' })
-  .then(response => console.log(response.body));
+  .then(res => console.log(res.body));
 ```
 
 ## API
@@ -60,6 +60,17 @@ client.post('/post', { foo: 'bar' })
 - [`HttpResponse.headers`](httpresponseheaders)
 - [`HttpResponse.isSuccess()`](httpresponseissuccess)
 - [`HttpResponse.isError()`](httpresponseiserror)
+- [`HttpResponse.isOk`](httpresponseisok)
+- [`HttpResponse.isClientError`](httpresponseisclienterror)
+- [`HttpResponse.isServerError`](httpresponseisservererror)
+- [`HttpResponse.isUnauthorized()`](httpresponseisunauthorized)
+- [`HttpResponse.isForbidden()`](httpresponseisforbidden)
+- [`HttpResponse.isNotFound`](httpresponseisnotfound)
+- [`HttpResponse.isValidationError`](httpresponseisvalidationerror)
+- [`HttpResponse.contentType`](httpresponsecontenttype)
+- [`HttpResponse.isImage()`](httpresponseisimage)
+- [`HttpResponse.isJson()`](httpresponseisjson)
+- [`HttpResponse.isText`](httpresponseistext)
 
 ### `HttpClient`
 
@@ -88,8 +99,8 @@ const client = new HttpClient('https://httpbin.org', {
 
     throw new Error('custom error');
   },
-  onSuccess(response) {
-    console.log(response.body);
+  onSuccess(res) {
+    console.log(res.body);
 
     return 'custom result';
   },
@@ -138,7 +149,7 @@ client.request('GET', '/json', {
   headers: {
     accept: 'application/json',
   },
-}).then(response => console.log(response.body));
+}).then(res => console.log(res.body));
 ```
 
 #### `HttpClient.get()`
@@ -158,7 +169,7 @@ client.get('/json', {
   headers: {
     accept: 'application/json',
   },
-}).then(response => console.log(response.body));
+}).then(res => console.log(res.body));
 ```
 
 #### `HttpClient.post()`
@@ -178,7 +189,7 @@ client.post('/post', { foo: 'bar' }, {
   headers: {
     accept: 'application/json',
   },
-}).then(response => console.log(response.body));
+}).then(res => console.log(res.body));
 ```
 
 #### `HttpClient.put()`
@@ -198,7 +209,7 @@ client.put('/put', { foo: 'bar' }, {
   headers: {
     accept: 'application/json',
   },
-}).then(response => console.log(response.body));
+}).then(res => console.log(res.body));
 ```
 
 #### `HttpClient.patch()`
@@ -218,7 +229,7 @@ client.patch('/patch', { foo: 'bar' }, {
   headers: {
     accept: 'application/json',
   },
-}).then(response => console.log(response.body));
+}).then(res => console.log(res.body));
 ```
 
 #### `HttpClient.delete()`
@@ -238,7 +249,7 @@ client.delete('/delete', {
   headers: {
     accept: 'application/json',
   },
-}).then(response => console.log(response.body));
+}).then(res => console.log(res.body));
 ```
 
 #### `HttpClient.setDefaultOption()`
@@ -427,7 +438,7 @@ const client = new HttpClient('https://httpbin.org');
 // If response's content-type is application/json, response.body will be
 // automatically parsed to object.
 client.get('/json')
-  .then(response => console.log(response.body));
+  .then(res => console.log(res.body));
 ```
 
 #### `HttpResponse.status`
@@ -440,7 +451,7 @@ import HttpClient from '@/risan/http-client';
 const client = new HttpClient('https://httpbin.org');
 
 client.get('/status/204')
-  .then(response => console.log(response.status)); // 204
+  .then(res => console.log(res.status)); // 204
 ```
 
 #### `HttpResponse.headers`
@@ -452,16 +463,16 @@ import HttpClient from '@/risan/http-client';
 
 const client = new HttpClient('https://httpbin.org');
 
-client.get('/json').then(response => {
-  console.log(response.headers.has('content-type')); // true
-  console.log(response.headers.get('content-type')); // application/json
-  console.log(response.headers['content-type']);     // application/json
+client.get('/json').then(res => {
+  console.log(res.headers.has('content-type')); // true
+  console.log(res.headers.get('content-type')); // application/json
+  console.log(res.headers['content-type']);     // application/json
 });
 ```
 
 #### `HttpResponse.isSuccess()`
 
-Check if the received `HttpResponse` instance is successful (status code between 200—299).
+Check if the received `HttpResponse` instance is successful (status code between 200-299).
 
 ```js
 HttpResponse.isSuccess(): Boolean
@@ -473,10 +484,10 @@ import HttpClient from '@/risan/http-client';
 const client = new HttpClient('https://httpbin.org');
 
 client.get('/status/200')
-  .then(response => console.log(response.isSuccess())); // true
+  .then(res => console.log(res.isSuccess())); // true
 
 client.get('/status/400').then(
-  response => {},
+  res => {},
   error => console.log(error.response.isSuccess()) // false
 );
 ```
@@ -495,12 +506,256 @@ import HttpClient from '@/risan/http-client';
 const client = new HttpClient('https://httpbin.org');
 
 client.get('/status/200')
-  .then(response => console.log(response.isError())); // false
+  .then(res => console.log(res.isError())); // false
 
 client.get('/status/400').then(
-  response => {},
+  res => {},
   error => console.log(error.response.isError()) // true
 );
+```
+
+#### `HttpResponse.isOk()`
+
+Check if the status code is 200.
+
+```js
+HttpResponse.isOk(): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/200')
+  .then(res => console.log(res.isOk())); // true
+
+client.get('/status/201')
+  .then(res => console.log(res.isOk())); // false
+```
+
+#### `HttpResponse.isClientError()`
+
+Check if the received `HttpResponse` instance is client error (status code between 400-499).
+
+```js
+HttpResponse.isClientError(): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/401').then(
+  res => {},
+  error => console.log(error.response.isClientError()) // true
+);
+
+client.get('/status/500').then(
+  res => {},
+  error => console.log(error.response.isClientError()) // false
+);
+```
+
+#### `HttpResponse.isServerError()`
+
+Check if the received `HttpResponse` instance is server error (status code >= 500).
+
+```js
+HttpResponse.isServerError(): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/500').then(
+  res => {},
+  error => console.log(error.response.isServerError()) // true
+);
+
+client.get('/status/404').then(
+  res => {},
+  error => console.log(error.response.isServerError()) // false
+);
+```
+
+#### `HttpResponse.isUnauthorized()`
+
+Check if the status code is 401.
+
+```js
+HttpResponse.isUnauthorized(): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/401').then(
+  res => {},
+  error => console.log(error.response.isUnauthorized()) // true
+);
+
+client.get('/status/404').then(
+  res => {},
+  error => console.log(error.response.isUnauthorized()) // false
+);
+```
+
+#### `HttpResponse.isForbidden()`
+
+Check if the status code is 403.
+
+```js
+HttpResponse.isForbidden(): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/403').then(
+  res => {},
+  error => console.log(error.response.isForbidden()) // true
+);
+
+client.get('/status/404').then(
+  res => {},
+  error => console.log(error.response.isForbidden()) // false
+);
+```
+
+#### `HttpResponse.isNotFound()`
+
+Check if the status code is 404.
+
+```js
+HttpResponse.isNotFound(): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/404').then(
+  res => {},
+  error => console.log(error.response.isNotFound()) // true
+);
+
+client.get('/status/400').then(
+  res => {},
+  error => console.log(error.response.isNotFound()) // false
+);
+```
+
+#### `HttpResponse.isValidationError()`
+
+Check if the status code is 422.
+
+```js
+HttpResponse.isValidationError(): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/422').then(
+  res => {},
+  error => console.log(error.response.isValidationError()) // true
+);
+
+client.get('/status/400').then(
+  res => {},
+  error => console.log(error.response.isValidationError()) // false
+);
+```
+
+#### `HttpResponse.contentType()`
+
+Get response content type header value.
+
+```js
+HttpResponse.contentType(): String
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/json')
+  .then(res => console.log(res.contentType())); // application/json
+
+client.get('/image/png')
+  .then(res => console.log(res.contentType())); // image/png
+```
+
+#### `HttpResponse.isImage()`
+
+Check if the response content type header starts with `image/`.
+
+```js
+HttpResponse.isImage(): String
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/image/png')
+  .then(res => console.log(res.isImage())); // true
+
+client.get('/json')
+  .then(res => console.log(res.isImage())); // false
+```
+
+#### `HttpResponse.isJson()`
+
+Check if the response content type header contains `/json` or `+json`.
+
+```js
+HttpResponse.isJson(): String
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/json')
+  .then(res => console.log(res.isJson())); // true
+
+client.get('/image/png')
+  .then(res => console.log(res.isJson())); // false
+```
+
+#### `HttpResponse.isText()`
+
+Check if the response content type header starts with `text/`.
+
+```js
+HttpResponse.isText(): String
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/html')
+  .then(res => console.log(res.isText())); // true
+
+client.get('/json')
+  .then(res => console.log(res.isText())); // false
 ```
 
 ## Guide

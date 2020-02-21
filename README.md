@@ -60,23 +60,31 @@ client.post('/post', { foo: 'bar' })
 - [`HttpResponse.headers`](#httpresponseheaders)
 - [`HttpResponse.isSuccess()`](#httpresponseissuccess)
 - [`HttpResponse.isError()`](#httpresponseiserror)
-- [`HttpResponse.isOk`](#httpresponseisok)
-- [`HttpResponse.isClientError`](#httpresponseisclienterror)
-- [`HttpResponse.isServerError`](#httpresponseisservererror)
+- [`HttpResponse.isOk()`](#httpresponseisok)
+- [`HttpResponse.isClientError()`](#httpresponseisclienterror)
+- [`HttpResponse.isServerError()`](#httpresponseisservererror)
 - [`HttpResponse.isUnauthorized()`](#httpresponseisunauthorized)
 - [`HttpResponse.isForbidden()`](#httpresponseisforbidden)
-- [`HttpResponse.isNotFound`](#httpresponseisnotfound)
-- [`HttpResponse.isValidationError`](#httpresponseisvalidationerror)
-- [`HttpResponse.contentType`](#httpresponsecontenttype)
+- [`HttpResponse.isNotFound()`](#httpresponseisnotfound)
+- [`HttpResponse.isValidationError()`](#httpresponseisvalidationerror)
+- [`HttpResponse.contentType()`](#httpresponsecontenttype)
 - [`HttpResponse.isImage()`](#httpresponseisimage)
 - [`HttpResponse.isJson()`](#httpresponseisjson)
-- [`HttpResponse.isText`](#httpresponseistext)
+- [`HttpResponse.isText()`](#httpresponseistext)
 
 **`HttpHeaders`**
 
-- [`HttpHeaders.get`](#httpheadersget)
-- [`HttpHeaders.has`](#httpheadershas)
-- [`HttpHeaders.contentType`](#httpheaderscontenttype)
+- [`HttpHeaders.get()`](#httpheadersget)
+- [`HttpHeaders.has()`](#httpheadershas)
+- [`HttpHeaders.contentType()`](#httpheaderscontenttype)
+
+**`HttpError`**
+
+- [`HttpError.message`](#httperrormessage)
+- [`HttpError.response`](#httperrorresponse)
+- [`HttpError.validationErrors`](#httperrorvalidationerrors)
+- [`HttpError.hasResponse`](#httperrorhasresponse)
+- [`HttpError.hasValidationErrors`](#httperrorhasvalidationerrors)
 
 ### `HttpClient`
 
@@ -833,6 +841,121 @@ const client = new HttpClient('https://httpbin.org');
 
 client.get('/image/png')
   .then(res => console.log(res.headers.contentType())); // image/png
+```
+
+### `HttpError`
+
+The `HttpError` instance will be thrown when request failed or the error response is received (status code >= 400).
+
+#### `HttpError.message`
+
+The error mesage.
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/foo').then(
+  res => {},
+  error => console.log(error.message) // Failed to fetch
+);
+```
+
+#### `HttpError.response`
+
+The [`HttpResponse`](#httpresponse) instance. If there's no response, this property will have `null` value.
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/400').then(
+  res => {},
+  error => console.log(error.response) // HttpResponse instance
+);
+
+client.get('/foo').then(
+  res => {},
+  error => console.log(error.response) // null
+);
+```
+
+#### `HttpError.validationErrors`
+
+The validation errors object. It will only be available if the status code is 422 and the given `validationErrorsPath` is exists in the response JSON.
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('http://www.mocky.io/v2', {
+  validationErrorsPath: 'errors',
+});
+
+// http://www.mocky.io/v2/5e4ffabc3000005100226d1c
+// {
+//   "message": "Custom error",
+//   "errors": {
+//     "email": ["error1", "error2"]
+//   }
+// }
+client.get('/5e4ffabc3000005100226d1c').then(
+  res => {},
+  error => console.log(error.validationErrors) // { email: ["error1", "error2"] }
+);
+```
+
+#### `HttpError.hasResponse()`
+
+Check if the error has `HttpResponse` instance.
+
+```js
+HttpError.hasResponse(): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/400').then(
+  res => {},
+  error => console.log(error.hasResponse()) // true
+);
+
+client.get('/foo').then(
+  res => {},
+  error => console.log(error.hasResponse()) // false
+);
+```
+
+#### `HttpError.hasValidationErrors()`
+
+Check if the `validationErrors` property is not empty.
+
+```js
+HttpError.hasValidationErrors(): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('http://www.mocky.io/v2', {
+  validationErrorsPath: 'errors',
+});
+
+// http://www.mocky.io/v2/5e4ffabc3000005100226d1c
+// {
+//   "message": "Custom error",
+//   "errors": {
+//     "email": ["error1", "error2"]
+//   }
+// }
+client.get('/5e4ffabc3000005100226d1c').then(
+  res => {},
+  error => console.log(error.hasValidationErrors()) // true
+);
 ```
 
 ## Guide

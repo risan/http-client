@@ -128,7 +128,7 @@ The request's options are similar to [`fetch()`](https://developer.mozilla.org/e
 - `headers` *(`Object`)*: Unlike `fetch()`, it only accepts an object literal.
 - `credentials` *(`String`)*: Default to `same-origin`.
 
-It also accepts a similar options as [`ky`](https://github.com/sindresorhus/ky#options):
+It also accepts similar options as [`ky`](https://github.com/sindresorhus/ky#options):
 
 - [`searchParams`](https://github.com/sindresorhus/ky#searchparams): Search parameters to include in the request URL.
 - [`retry`](https://github.com/sindresorhus/ky#retry) *(`Object|Number`)*: Maximum retry count.
@@ -141,14 +141,14 @@ However this library will always set the [`throwHttpErrors`](https://github.com/
 This library also accepts the following options:
 
 - `onError` *(`Function`)*: A callback function to call when an error response is received (status code >= 400). The function will receive an [`HttpError`](#httperror) instance as its parameter.
-- `onSuccess` *(`Function`)*: A callback function to call when an successful response is received (status code between 200-299). The function will receive an [`HttpResponse`](#httpresponse) instance as its parameter.
-- `responseType` *(`String`)*: Response's body type, it's the [`Body`](https://developer.mozilla.org/en-US/docs/Web/API/Body)'s method name to call to read and parse the response's body (`arrayBuffer`, `blob`, `formData`, `json`, or `text`). If you don't set the `responseType`, the body will be parsed based on it's content type header.
+- `onSuccess` *(`Function`)*: A callback function to call when a successful response is received (status code between 200-299). The function will receive an [`HttpResponse`](#httpresponse) instance as its parameter.
+- `responseType` *(`String`)*: Responses' body type, its the [`Body`](https://developer.mozilla.org/en-US/docs/Web/API/Body)'s method name to call to read and parse the responses' body (`arrayBuffer`, `blob`, `formData`, `json`, or `text`). If you don't set the `responseType`, the body will be parsed based on its content-type header.
 - `errorMessagePath` *(`String`)*: A path to a custom error message in JSON response.
 - `validationErrorsPath` *(`String`)*: A path to a custom validation errors detail in JSON response.
 
 #### `HttpClient.request()`
 
-Send HTTP request to `url` with the given HTTP `method`. The given [`options`](#options) will be merged with the previously set `defaultOptions`. On successful operation, it will return a `Promise` that will resolve to the [`HttpResponse`](#httpresponse) instance. On error it will throw an [`HttpError`](#httperror).
+Send HTTP request to `url` with the given HTTP `method`. The given [`options`](#options) will be merged with the previously set `defaultOptions`. On successful operation, it will return a `Promise` that will resolve to the [`HttpResponse`](#httpresponse) instance. On error, it will throw an [`HttpError`](#httperror).
 
 ```js
 HttpClient.request(method: String, url: String, options = {}): Promise
@@ -442,14 +442,14 @@ console.log(client.defaultOptions);
 
 #### `HttpResponse.body`
 
-Get the response's body.
+Get the responses' body.
 
 ```js
 import HttpClient from '@/risan/http-client';
 
 const client = new HttpClient('https://httpbin.org');
 
-// If response's content-type is application/json, response.body will be
+// If responses' content-type is application/json, response.body will be
 // automatically parsed to object.
 client.get('/json')
   .then(res => console.log(res.body));
@@ -457,7 +457,7 @@ client.get('/json')
 
 #### `HttpResponse.status`
 
-Get the response's status code *(`Number`)*.
+Get the responses' status code *(`Number`)*.
 
 ```js
 import HttpClient from '@/risan/http-client';
@@ -470,7 +470,7 @@ client.get('/status/204')
 
 #### `HttpResponse.headers`
 
-Get the response's headers *([`HttpHeaders`](#httpheaders))*.
+Get the responses' headers *([`HttpHeaders`](#httpheaders))*.
 
 ```js
 import HttpClient from '@/risan/http-client';
@@ -694,7 +694,7 @@ client.get('/status/400').then(
 
 #### `HttpResponse.contentType()`
 
-Get response content type header value.
+Get response content-type header value.
 
 ```js
 HttpResponse.contentType(): String
@@ -714,7 +714,7 @@ client.get('/image/png')
 
 #### `HttpResponse.isImage()`
 
-Check if the response content type header starts with `image/`.
+Check if the response content-type header starts with `image/`.
 
 ```js
 HttpResponse.isImage(): String
@@ -734,7 +734,7 @@ client.get('/json')
 
 #### `HttpResponse.isJson()`
 
-Check if the response content type header contains `/json` or `+json`.
+Check if the response content-type header contains `/json` or `+json`.
 
 ```js
 HttpResponse.isJson(): String
@@ -754,7 +754,7 @@ client.get('/image/png')
 
 #### `HttpResponse.isText()`
 
-Check if the response content type header starts with `text/`.
+Check if the response content-type header starts with `text/`.
 
 ```js
 HttpResponse.isText(): String
@@ -809,7 +809,7 @@ client.get('/image/png').then(res => {
 
 #### `HttpHeaders.has()`
 
-Check if the header at `key` is exists. The `key` is case insensitive.
+Check if the header at `key` exists. The `key` is case insensitive.
 
 ```js
 HttpHeaders.get(key: String): Boolean
@@ -828,7 +828,7 @@ client.get('/image/png').then(res => {
 
 #### `HttpHeaders.contentType()`
 
-Get the header content type value.
+Get the header content-type value.
 
 ```js
 HttpHeaders.contentType(): String
@@ -884,7 +884,7 @@ client.get('/foo').then(
 
 #### `HttpError.validationErrors`
 
-The validation errors object. It will only be available if the status code is 422 and the given `validationErrorsPath` is exists in the response JSON.
+The validation errors object. It will only be available if the status code is 422 and the given `validationErrorsPath` exists in the response JSON.
 
 ```js
 import HttpClient from '@/risan/http-client';
@@ -984,7 +984,7 @@ client.get('/html', {
 
 ### Send JSON Body
 
-If you don't set any header content type, `body` with object literal will be send as JSON. The header content type will also be set to `application/json`.
+If you don't set any header content-type, the `body` with object literal will be sent as JSON. The header content-type will also be set to `application/json`.
 
 ```js
 import HttpClient from '@risan/http-client';
@@ -997,7 +997,7 @@ client.post('/post', { id: 123, name: 'john' })
 
 ### Send URL Encoded Body
 
-To send a URL encoded body, all you have to do is set the header content type to `application/x-www-form-urlencoded`.
+To send a URL encoded body, all you have to do is set the header content-type to `application/x-www-form-urlencoded`.
 
 ```js
 import HttpClient from '@risan/http-client';
@@ -1011,7 +1011,7 @@ client.post('/post', { id: 123, name: 'john' }, {
 }).then(res => console.log(res.body));
 ```
 
-Or you can also pass the `URLSearchParams` instance as body.
+Or you can also pass the [`URLSearchParams`](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) instance as the body.
 
 ```js
 import HttpClient from '@risan/http-client';
@@ -1028,7 +1028,7 @@ client.post('/post', searchParams)
 
 ### Send Multipart Form Data
 
-To send a multipart form data body, all you have to do is set the header content type to `multipart/form-data`.
+To send a multipart form data body, all you have to do is set the header content-type to `multipart/form-data`.
 
 ```js
 import HttpClient from '@risan/http-client';
@@ -1042,7 +1042,7 @@ client.post('/post', { id: 123, name: 'john' }, {
 }).then(res => console.log(res.body));
 ```
 
-Or you can also pass the `FormData` instance as body.
+Or you can also pass the [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) instance as the body.
 
 ```js
 import HttpClient from '@risan/http-client';
@@ -1059,7 +1059,7 @@ client.post('/post', formData)
 
 ### Custom Error Message from Response
 
-By default the error message in [`HttpError`](#httperror) is comming from the HTTP status text in the received response. If the received error response is in JSON, you may pass the `errorMessagePath` option to retrieve the error message from the response's body. You may pass it as a `defaultOptions` or as `options` at each request.
+By default, the error message in [`HttpError`](#httperror) is coming from the HTTP status text in the received response. If the received error response is in JSON, you may pass the `errorMessagePath` option to retrieve the error message from the responses' body. You may pass it as a `defaultOptions` or as `options` at each request.
 
 ```js
 import HttpClient from '@/risan/http-client';
@@ -1096,7 +1096,7 @@ client.get('/5e4ffabc3000005100226d1c', { errorMessagePath: 'data.message' }).th
 
 ### Handle Error Response with 200 Status Code
 
-You might be using an API that returns 200 status code even if there's an error. To handle this kind of case, you may pass the `onSuccess` callback and throws an error if the received response is actualy an error.
+You might be using an API that returns 200 status code even if there's an error. To handle this kind of case, you may pass the `onSuccess` callback and throws an error if the received response is an error.
 
 ```js
 import HttpClient from '@risan/http-client';
@@ -1117,13 +1117,13 @@ client.get('/json', {
 
 ### Force the Body to be Parsed as Other Data Types
 
-By default this library will read and parsed the response's body based on its header content type:
+By default this library will read and parsed the responses' body based on its header content-type:
 
-- Content type that contains `/json` or `+json` will be parsed as JSON object.
-- Content type that starts with `text/` will be parsed as text.
-- Content type that starts with `image/` will be parsed as blob.
+- Content-type that contains `/json` or `+json` will be parsed as JSON object.
+- Content-type that starts with `text/` will be parsed as text.
+- Content-type that starts with `image/` will be parsed as a blob.
 
-However you may override this behaviour by passing the `responseType` parameter. You may pass: `arrayBuffer`, `blob`, `formData`, `json`, or `text`.
+However, you may override this behavior by passing the `responseType` parameter. You may pass: `arrayBuffer`, `blob`, `formData`, `json`, or `text`.
 
 ```js
 import HttpClient from '@risan/http-client';

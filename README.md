@@ -140,8 +140,8 @@ However this library will always set the [`throwHttpErrors`](https://github.com/
 
 This library also accepts the following options:
 
-- `onError` *(`Function`)*: A callback function to call when an error response is received (status code >= 400).
-- `onSuccess` *(`Function`)*: A callback function to call when an successful response is received (status code between 200-299).
+- `onError` *(`Function`)*: A callback function to call when an error response is received (status code >= 400). The function will receive an [`HttpError`](#httperror) instance as its parameter.
+- `onSuccess` *(`Function`)*: A callback function to call when an successful response is received (status code between 200-299). The function will receive an [`HttpResponse`](#httpresponse) instance as its parameter.
 - `responseType` *(`String`)*: Response's body type, it's the [`Body`](https://developer.mozilla.org/en-US/docs/Web/API/Body)'s method name to call to read and parse the response's body (`arrayBuffer`, `blob`, `formData`, `json`, or `text`). If you don't set the `responseType`, the body will be parsed based on it's content type header.
 - `errorMessagePath` *(`String`)*: A path to a custom error message in JSON response.
 - `validationErrorsPath` *(`String`)*: A path to a custom validation errors detail in JSON response.
@@ -965,20 +965,173 @@ client.get('/5e4ffabc3000005100226d1c').then(
 ```js
 import HttpClient from '@risan/http-client';
 
-const client = new HttpClient('http://example.com', {
+const client = new HttpClient('https://httpbin.org', {
   headers: {
     accept: 'application/json',
   },
 });
 
-client.get('/json').then(response => console.log(response.body));
+client.get('/json')
+  .then(res => console.log(res.body));
 
 // Override default accept headers.
 client.get('/html', {
   headers: {
     accept: 'text/html',
   },
-}).then(response => console.log(response.body));
+}).then(res => console.log(res.body));
+```
+
+### Send JSON Body
+
+If you don't set any header content type, `body` with object literal will be send as JSON. The header content type will also be set to `application/json`.
+
+```js
+import HttpClient from '@risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.post('/post', { id: 123, name: 'john' })
+  .then(res => console.log(res.body));
+```
+
+### Send URL Encoded Body
+
+To send a URL encoded body, all you have to do is set the header content type to `application/x-www-form-urlencoded`.
+
+```js
+import HttpClient from '@risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.post('/post', { id: 123, name: 'john' }, {
+  headers: {
+    'content-type': 'application/x-www-form-urlencoded',
+  },
+}).then(res => console.log(res.body));
+```
+
+Or you can also pass the `URLSearchParams` instance as body.
+
+```js
+import HttpClient from '@risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+const searchParams = new URLSearchParams();
+searchParams.set('id', 123);
+searchParams.set('name', 'john');
+
+client.post('/post', searchParams)
+  .then(res => console.log(res.body));
+```
+
+### Send Multipart Form Data
+
+To send a multipart form data body, all you have to do is set the header content type to `multipart/form-data`.
+
+```js
+import HttpClient from '@risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.post('/post', { id: 123, name: 'john' }, {
+  headers: {
+    'content-type': 'multipart/form-data',
+  },
+}).then(res => console.log(res.body));
+```
+
+Or you can also pass the `FormData` instance as body.
+
+```js
+import HttpClient from '@risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+const formData = new FormData();
+formData.append('id', 123);
+formData.append('name', 'john');
+
+client.post('/post', formData)
+  .then(res => console.log(res.body));
+```
+
+### Custom Error Message from Response
+
+By default the error message in [`HttpError`](#httperror) is comming from the HTTP status text in the received response. If the received error response is in JSON, you may pass the `errorMessagePath` option to retrieve the error message from the response's body. You may pass it as a `defaultOptions` or as `options` at each request.
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('http://www.mocky.io/v2', {
+  errorMessagePath: 'message',
+});
+
+// http://www.mocky.io/v2/5e4ffabc3000005100226d1c
+// {
+//   "message": "Custom error",
+//   ...
+// }
+client.get('/5e4ffabc3000005100226d1c').then(
+  res => {},
+  error => console.log(error.message) // Custom error
+);
+```
+
+If the error message is deeply nested, you can use dot notation.
+
+```js
+// {
+//   "data": {
+//     "message": "Custom error",
+//   }
+// }
+
+client.get('/5e4ffabc3000005100226d1c', { errorMessagePath: 'data.message' }).then(
+  res => {},
+  error => console.log(error.message)
+);
+```
+
+### Handle Error Response with 200 Status Code
+
+You might be using an API that returns 200 status code even if there's an error. To handle this kind of case, you may pass the `onSuccess` callback and throws an error if the received response is actualy an error.
+
+```js
+import HttpClient from '@risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/json', {
+  onSuccess(res) {
+    if (res.body.status !== true) {
+      throw new Error('Status code 200 but throws error');
+    }
+  },
+}).then(
+  res => {},
+  error => console.error(error.message)
+);
+```
+
+### Force the Body to be Parsed as Other Data Types
+
+By default this library will read and parsed the response's body based on its header content type:
+
+- Content type that contains `/json` or `+json` will be parsed as JSON object.
+- Content type that starts with `text/` will be parsed as text.
+- Content type that starts with `image/` will be parsed as blob.
+
+However you may override this behaviour by passing the `responseType` parameter. You may pass: `arrayBuffer`, `blob`, `formData`, `json`, or `text`.
+
+```js
+import HttpClient from '@risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/json', { responseType: 'blob' })
+  .then(res => console.log(res.body));
 ```
 
 ## License

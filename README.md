@@ -55,22 +55,28 @@ client.post('/post', { foo: 'bar' })
 
 **`HttpResponse`**
 
-- [`HttpResponse.body`](httpresponsebody)
-- [`HttpResponse.status`](httpresponsestatus)
-- [`HttpResponse.headers`](httpresponseheaders)
-- [`HttpResponse.isSuccess()`](httpresponseissuccess)
-- [`HttpResponse.isError()`](httpresponseiserror)
-- [`HttpResponse.isOk`](httpresponseisok)
-- [`HttpResponse.isClientError`](httpresponseisclienterror)
-- [`HttpResponse.isServerError`](httpresponseisservererror)
-- [`HttpResponse.isUnauthorized()`](httpresponseisunauthorized)
-- [`HttpResponse.isForbidden()`](httpresponseisforbidden)
-- [`HttpResponse.isNotFound`](httpresponseisnotfound)
-- [`HttpResponse.isValidationError`](httpresponseisvalidationerror)
-- [`HttpResponse.contentType`](httpresponsecontenttype)
-- [`HttpResponse.isImage()`](httpresponseisimage)
-- [`HttpResponse.isJson()`](httpresponseisjson)
-- [`HttpResponse.isText`](httpresponseistext)
+- [`HttpResponse.body`](#httpresponsebody)
+- [`HttpResponse.status`](#httpresponsestatus)
+- [`HttpResponse.headers`](#httpresponseheaders)
+- [`HttpResponse.isSuccess()`](#httpresponseissuccess)
+- [`HttpResponse.isError()`](#httpresponseiserror)
+- [`HttpResponse.isOk`](#httpresponseisok)
+- [`HttpResponse.isClientError`](#httpresponseisclienterror)
+- [`HttpResponse.isServerError`](#httpresponseisservererror)
+- [`HttpResponse.isUnauthorized()`](#httpresponseisunauthorized)
+- [`HttpResponse.isForbidden()`](#httpresponseisforbidden)
+- [`HttpResponse.isNotFound`](#httpresponseisnotfound)
+- [`HttpResponse.isValidationError`](#httpresponseisvalidationerror)
+- [`HttpResponse.contentType`](#httpresponsecontenttype)
+- [`HttpResponse.isImage()`](#httpresponseisimage)
+- [`HttpResponse.isJson()`](#httpresponseisjson)
+- [`HttpResponse.isText`](#httpresponseistext)
+
+**`HttpHeaders`**
+
+- [`HttpHeaders.get`](#httpheadersget)
+- [`HttpHeaders.has`](#httpheadershas)
+- [`HttpHeaders.contentType`](#httpheaderscontenttype)
 
 ### `HttpClient`
 
@@ -756,6 +762,77 @@ client.get('/html')
 
 client.get('/json')
   .then(res => console.log(res.isText())); // false
+```
+
+### `HttpHeaders`
+
+It represents the HTTP headers on the response. The `HttpResponse.headers` is an instance of this class. You can access the header value by accessing the `HttpHeader` property directly. Note that the property key is in lower case.
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/image/png').then(res => {
+  console.log(res.headers['content-type']);   // image/png
+  console.log(res.headers['content-length']); // 8090
+  console.log(res.headers.foo);               // undefined
+});
+```
+
+#### `HttpHeaders.get()`
+
+Get the header value at `key`. The `key` is case insensitive.
+
+```js
+HttpHeaders.get(key: String): String | undefined
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/image/png').then(res => {
+  console.log(res.headers.get('content-type')); // image/png
+  console.log(res.headers.get('foo'));          // undefined
+});
+```
+
+#### `HttpHeaders.has()`
+
+Check if the header at `key` is exists. The `key` is case insensitive.
+
+```js
+HttpHeaders.get(key: String): Boolean
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/image/png').then(res => {
+  console.log(res.headers.has('content-type')); // true
+  console.log(res.headers.has('foo'));          // false
+});
+```
+
+#### `HttpHeaders.contentType()`
+
+Get the header content type value.
+
+```js
+HttpHeaders.contentType(): String
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/image/png')
+  .then(res => console.log(res.headers.contentType())); // image/png
 ```
 
 ## Guide

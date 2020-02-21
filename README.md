@@ -44,8 +44,22 @@ client.post('/post', { foo: 'bar' })
 - [`HttpClient.put()`](#httpclientput)
 - [`HttpClient.patch()`](#httpclientpatch)
 - [`HttpClient.delete()`](#httpclientdelete)
+- [`HttpClient.setDefaultOption()`](#httpclientsetDefaultOption)
+- [`HttpClient.removeDefaultOption()`](#httpclientremovedefaultoption)
+- [`HttpClient.setDefaultHeader()`](#httpclientsetdefaultheader)
+- [`HttpClient.removeDefaultHeader()`](#httpclientremovedefaultheader)
+- [`HttpClient.setDefaultBearerToken()`](#httpclientsetdefaultbearertoken)
+- [`HttpClient.removeDefaultBearerToken()`](#httpclientremovedefaultbearertoken)
 
-### `HttpClient()`
+- [`HttpResponse.body`](httpresponsebody)
+- [`HttpResponse.status`](httpresponsestatus)
+- [`HttpResponse.headers`](httpresponseheaders)
+- [`HttpResponse.isSuccess()`](httpresponseissuccess)
+- [`HttpResponse.isError()`](httpresponseiserror)
+
+### `HttpClient`
+
+#### `HttpClient()`
 
 Create a new `HttpClient` instance.
 
@@ -102,9 +116,9 @@ As addition, it also accept the following options:
 - `errorMessagePath`: A path to a custom error message.
 - `validationErrorsPath`: A path to a custom validation errors detail.
 
-### `HttpClient.request()`
+#### `HttpClient.request()`
 
-Send HTTP request.
+Send HTTP request to `url` with the given HTTP `method`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
 
 ```js
 HttpClient.request(method, url, options = {});
@@ -115,13 +129,16 @@ import HttpClient from '@/risan/http-client';
 
 const client = new HttpClient('https://httpbin.org');
 
-client.request('GET', '/json')
-  .then(response => console.log(response.body));
+client.request('GET', '/json', {
+  headers: {
+    accept: 'application/json',
+  },
+}).then(response => console.log(response.body));
 ```
 
-### `HttpClient.get()`
+#### `HttpClient.get()`
 
-Send HTTP GET request.
+Send HTTP GET request to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
 
 ```js
 HttpClient.get(url, options = {});
@@ -132,13 +149,16 @@ import HttpClient from '@/risan/http-client';
 
 const client = new HttpClient('https://httpbin.org');
 
-client.get('/json')
-  .then(response => console.log(response.body));
+client.get('/json', {
+  headers: {
+    accept: 'application/json',
+  },
+}).then(response => console.log(response.body));
 ```
 
-### `HttpClient.post()`
+#### `HttpClient.post()`
 
-Send HTTP POST request.
+Send HTTP POST request with `body` to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
 
 ```js
 HttpClient.post(url, body = null, options = {});
@@ -149,13 +169,16 @@ import HttpClient from '@/risan/http-client';
 
 const client = new HttpClient('https://httpbin.org');
 
-client.post('/post', { foo: 'bar' })
-  .then(response => console.log(response.body));
+client.post('/post', { foo: 'bar' }, {
+  headers: {
+    accept: 'application/json',
+  },
+}).then(response => console.log(response.body));
 ```
 
-### `HttpClient.put()`
+#### `HttpClient.put()`
 
-Send HTTP PUT request.
+Send HTTP PUT request with `body` to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
 
 ```js
 HttpClient.put(url, body = null, options = {});
@@ -166,13 +189,16 @@ import HttpClient from '@/risan/http-client';
 
 const client = new HttpClient('https://httpbin.org');
 
-client.put('/put', { foo: 'bar' })
-  .then(response => console.log(response.body));
+client.put('/put', { foo: 'bar' }, {
+  headers: {
+    accept: 'application/json',
+  },
+}).then(response => console.log(response.body));
 ```
 
-### `HttpClient.patch()`
+#### `HttpClient.patch()`
 
-Send HTTP PATCH request.
+Send HTTP PATCH request with `body` to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
 
 ```js
 HttpClient.patch(url, body = null, options = {});
@@ -183,13 +209,16 @@ import HttpClient from '@/risan/http-client';
 
 const client = new HttpClient('https://httpbin.org');
 
-client.patch('/patch', { foo: 'bar' })
-  .then(response => console.log(response.body));
+client.patch('/patch', { foo: 'bar' }, {
+  headers: {
+    accept: 'application/json',
+  },
+}).then(response => console.log(response.body));
 ```
 
-### `HttpClient.delete()`
+#### `HttpClient.delete()`
 
-Send HTTP DELETE request.
+Send HTTP DELETE request to `url`. The given [`options`](#options) will be merged with the previously set `defaultOptions`.
 
 ```js
 HttpClient.delete(url, options = {});
@@ -200,8 +229,273 @@ import HttpClient from '@/risan/http-client';
 
 const client = new HttpClient('https://httpbin.org');
 
-client.delete('/delete')
+client.delete('/delete', {
+  headers: {
+    accept: 'application/json',
+  },
+}).then(response => console.log(response.body));
+```
+
+#### `HttpClient.setDefaultOption()`
+
+Set a default option at `key` with `value`. This method returns the `HttpClient` instance itself.
+
+```js
+HttpClient.setDefaultOption(key, value);
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org', {
+  mode: 'same-origin',
+  headers: {
+    accept: 'image/png',
+  },
+});
+
+client.setDefaultOption('mode', 'cors')
+  .setDefaultOption('headers.accept', ['application/json', 'text/plain']);
+
+// {
+//   mode: 'cors',
+//   headers: {
+//     accept: ['application/json', 'text/plain'],
+//   },
+// }
+console.log(client.defaultOptions);
+```
+
+#### `HttpClient.removeDefaultOption()`
+
+Remove a default option at `key`. This method returns the `HttpClient` instance itself.
+
+```js
+HttpClient.removeDefaultOption(key);
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org', {
+  mode: 'same-origin',
+  credentials: 'same-origin',
+  headers: {
+    accept: ['application/json', 'text/plain'],
+  },
+});
+
+client.removeDefaultOption('mode')
+  .removeDefaultOption('headers.accept');
+
+// {
+//   credentials: 'same-origin',
+//   headers: {},
+// }
+console.log(client.defaultOptions);
+```
+
+#### `HttpClient.setDefaultHeader()`
+
+Set a default header at `key` with `value`. This method returns the `HttpClient` instance itself.
+
+```js
+HttpClient.setDefaultHeader(key, value);
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org', {
+  headers: {
+    accept: 'image/png',
+  },
+});
+
+client.setDefaultHeader('accept', ['application/json', 'text/plain'])
+  .setDefaultHeader('content-type', 'application/json');
+
+// {
+//   headers: {
+//     accept: ['application/json', 'text/plain'],
+//     'content-type': 'application/json',
+//   },
+// }
+console.log(client.defaultOptions);
+```
+
+#### `HttpClient.removeDefaultHeader()`
+
+Remove a default header at `key`. This method returns the `HttpClient` instance itself.
+
+```js
+HttpClient.removeDefaultHeader(key);
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org', {
+  headers: {
+    accept: 'image/png',
+    'content-type': 'application/json',
+  },
+});
+
+client.removeDefaultHeader('accept');
+
+// {
+//   headers: {
+//     'content-type': 'application/json',
+//   },
+// }
+console.log(client.defaultOptions);
+```
+
+#### `HttpClient.setDefaultBearerToken()`
+
+Set a default bearer token in authorization header. This method returns the `HttpClient` instance itself.
+
+```js
+HttpClient.setDefaultBearerToken(token);
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org', {
+  headers: {
+    accept: 'application/json',
+  },
+});
+
+client.setDefaultBearerToken('secret');
+
+// {
+//   headers: {
+//     accept: 'application/json',
+//     authorization: 'Bearer secret',
+//   },
+// }
+console.log(client.defaultOptions);
+```
+
+#### `HttpClient.removeDefaultBearerToken()`
+
+Remove any default authorization header. This method returns the `HttpClient` instance itself.
+
+```js
+HttpClient.removeDefaultBearerToken();
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org', {
+  headers: {
+    accept: 'application/json',
+    authorization: 'Bearer secret',
+  },
+});
+
+client.removeDefaultBearerToken();
+
+// {
+//   headers: {
+//     accept: 'application/json',
+//   },
+// }
+console.log(client.defaultOptions);
+```
+
+### `HttpResponse`
+
+#### `HttpResponse.body`
+
+Get the response's body.
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+// If response's content-type is application/json, response.body will be
+// automatically parsed to object.
+client.get('/json')
   .then(response => console.log(response.body));
+```
+
+#### `HttpResponse.status`
+
+Get the response's status code.
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/204')
+  .then(response => console.log(response.status)); // 204
+```
+
+#### `HttpResponse.headers`
+
+Get the response's headers, it's an instance of [`HttpHeaders`](#httpheaders).
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/json').then(response => {
+  console.log(response.headers.has('content-type')); // true
+  console.log(response.headers.get('content-type')); // application/json
+  console.log(response.headers['content-type']);     // application/json
+});
+```
+
+#### `HttpResponse.isSuccess()`
+
+Check if the received `HttpResponse` instance is successful (status code between 200—299).
+
+```js
+HttpResponse.isSuccess();
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/200')
+  .then(response => console.log(response.isSuccess())); // true
+
+client.get('/status/400').then(
+  response => {},
+  error => console.log(error.response.isSuccess()) // false
+);
+```
+
+#### `HttpResponse.isError()`
+
+Check if the received `HttpResponse` instance is error (status code >= 400).
+
+```js
+HttpResponse.isError();
+```
+
+```js
+import HttpClient from '@/risan/http-client';
+
+const client = new HttpClient('https://httpbin.org');
+
+client.get('/status/200')
+  .then(response => console.log(response.isError())); // false
+
+client.get('/status/400').then(
+  response => {},
+  error => console.log(error.response.isError()) // true
+);
 ```
 
 ## Guide

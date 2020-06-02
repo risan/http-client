@@ -1,6 +1,6 @@
 {
   "name": "@risan/http-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "HTTP client for browser, a wrapper for ky.",
   "license": "MIT",
   "author": {
